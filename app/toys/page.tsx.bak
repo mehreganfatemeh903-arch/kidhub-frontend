@@ -1,0 +1,125 @@
+﻿import { getMediaUrl } from "../../lib/api";
+
+type AgeGroup = {
+  id: number;
+  title: string;
+  min_age_months: number;
+  max_age_months: number;
+};
+type DevelopmentArea = {
+  id: number;
+  name: string;
+  icon: string;
+};
+type AffiliateSource = {
+  id: number;
+  name: string;
+  base_url: string;
+};
+type Toy = {
+  id: number;
+  title: string;
+  slug: string;
+  age_groups: AgeGroup[];
+  development_areas: DevelopmentArea[];
+  short_description: string;
+  why_it_helps: string;
+  image: string | null;
+  affiliate_source: AffiliateSource | null;
+  affiliate_url: string;
+  price_range: string;
+};
+
+async function getToys(ageGroupId: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/toys/?age_groups=${ageGroupId}`,
+    { cache: "no-store" }
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data) ? data : data.value;
+}
+
+export default async function ToysPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ age?: string }>;
+}) {
+  const { age } = await searchParams;
+  const toys: Toy[] = age ? await getToys(age) : [];
+
+  return (
+    <main className="p-6" dir="rtl">
+      <h1 className="text-2xl font-bold mb-4">
+        اسباب‌بازی‌های مناسب این سن
+      </h1>
+
+      {toys.length === 0 && (
+        <p className="text-gray-500">
+          موردی برای این بازه‌ی سنی پیدا نشد.
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {toys.map((toy) => (
+          <div
+            key={toy.id}
+            className="border rounded-lg p-4 flex flex-col gap-2"
+            style={{ borderColor: "var(--color-card-border)" }}
+          >
+            <a href={`/toys/${toy.slug}`} className="flex flex-col gap-2">
+              {toy.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={getMediaUrl(toy.image) || ""}
+                  alt={toy.title}
+                  className="w-full h-40 object-cover rounded-md"
+                />
+              )}
+
+              <h2 className="font-semibold">{toy.title}</h2>
+              <p className="text-sm text-gray-600">
+                {toy.short_description}
+              </p>
+            </a>
+
+            {toy.development_areas.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {toy.development_areas.map((area) => (
+                  <span
+                    key={area.id}
+                    className="text-xs px-2 py-1 rounded-full"
+                    style={{ backgroundColor: "var(--color-bg)" }}
+                  >
+                    {area.name}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {toy.price_range && (
+              <span
+                className="text-sm font-medium"
+                style={{ color: "var(--color-primary)" }}
+              >
+                {toy.price_range}
+              </span>
+            )}
+
+            {toy.affiliate_url && (
+              <a
+                href={toy.affiliate_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-white text-center rounded-md py-2 mt-2"
+                style={{ backgroundColor: "var(--color-secondary)" }}
+              >
+                خرید از {toy.affiliate_source?.name || "فروشگاه"}
+              </a>
+            )}
+          </div>
+        ))}
+      </div>
+    </main>
+  );
+}

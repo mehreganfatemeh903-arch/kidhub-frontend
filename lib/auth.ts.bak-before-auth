@@ -1,4 +1,4 @@
-﻿const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export type AuthTokens = {
   access: string;
@@ -37,44 +37,29 @@ export async function login(username: string, password: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
-
   if (!res.ok) {
     throw new Error("نام کاربری یا رمز عبور اشتباه است.");
   }
-
   const data: AuthTokens = await res.json();
   saveTokens(data, username);
   return data;
 }
 
-export async function register(
-  username: string,
-  email: string,
-  password: string
-) {
+export async function register(username: string, email: string, password: string) {
   const res = await fetch(`${API_URL}/register/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, email, password }),
   });
-
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
-
-    let msg = "ثبت‌نام انجام نشد. لطفاً دوباره تلاش کنید.";
-
+    let msg = "خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.";
     const firstKey = Object.keys(errData)[0];
-
-    if (
-      firstKey &&
-      Array.isArray(errData[firstKey]) &&
-      errData[firstKey].length > 0
-    ) {
-      msg = String(errData[firstKey][0]);
+    if (firstKey && Array.isArray(errData[firstKey]) && errData[firstKey].length > 0) {
+      msg = errData[firstKey][0];
     }
-
     throw new Error(msg);
   }
-
+  // پس از ثبت‌نام موفق، بلافاصله وارد می‌شویم
   return login(username, password);
 }

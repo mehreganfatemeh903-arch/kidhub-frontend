@@ -31,6 +31,25 @@ export default function NewChildPage() {
 
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
+
+  function calculateAge(dateString: string) {
+    if (!dateString) return 0;
+
+    const birth = new Date(dateString + "T00:00:00");
+    const today = new Date();
+
+    let months =
+      (today.getFullYear() - birth.getFullYear()) * 12 +
+      (today.getMonth() - birth.getMonth());
+
+    if (today.getDate() < birth.getDate()) {
+      months -= 1;
+    }
+
+    return Math.max(0, months);
+  }
+
+  const ageInMonths = calculateAge(birthDate);
   const [interests, setInterests] = useState<string[]>([]);
   const [goals, setGoals] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -137,6 +156,15 @@ export default function NewChildPage() {
                 className="w-full rounded-xl border p-3 outline-none"
                 style={{ borderColor: "var(--color-card-border)" }}
               />
+
+              {birthDate && (
+                <div className="mt-3 rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-700">
+                  <span className="font-bold">?? ????:</span>{" "}
+                  {ageInMonths < 12
+                    ? `${ageInMonths} ???`
+                    : `${Math.floor(ageInMonths / 12)} ??? ? ${ageInMonths % 12} ???`}
+                </div>
+              )}
             </div>
           </div>
 

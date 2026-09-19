@@ -1,0 +1,322 @@
+﻿
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  getChildProfiles,
+  uploadLullabyRecording,
+  getLullabyRecordings,
+  getMediaUrl,
+  type ChildProfile,
+} from "@/lib/api";
+
+type Lullaby = {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  lyrics: string;
+  audio_file: string | null;
+  source_name: string;
+  source_url: string;
+  is_public_domain: boolean;
+};
+
+type Recording = {
+  id: number;
+  child: number | null;
+  lullaby: number;
+  audio_file: string;
+  title: string;
+  created_at: string;
+};
+
+export default function LullabiesPage() {
+  const [lullabies, setLullabies] = useState<Lullaby[]>([]);
+  const [children, setChildren] = useState<ChildProfile[]>([]);
+  const [recordings, setRecordings] = useState<Recording[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [recordingLullabyId, setRecordingLullabyId] = useState<number | null>(
+    null
+  );
+  const [selectedChild, setSelectedChild] = useState<number | "">("");
+  const [recordingTitle, setRecordingTitle] = useState("");
+
+  const [isRecording, setIsRecording] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/lullabies/`).then((res) =>
+        res.json()
+      ),
+      getChildProfiles().catch(() => []),
+    ])
+      .then(([lullabyData, childData]) => {
+        setLullabies(lullabyData);
+        setChildren(childData);
+      })
+      .catch(() => {
+        setLullabies([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    getLullabyRecordings()
+      .then((data) => setRecordings(data))
+      .catch(() => {});
+  }, []);
+
+  const startRecording = async (lullabyId: number) => {
+    setMessage("");
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+
+      const recorder = new MediaRecorder(stream);
+
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+
+        const audioBlob = new Blob(chunksRef.current, {
+          type: recorder.mimeType || "audio/webm",
+        });
+
+        setSaving(true);
+
+        try {
+          const result = await uploadLullabyRecording({
+            lullaby: lullabyId,
+            child: selectedChild === "" ? null : selectedChild,
+            title: recordingTitle || "لالایی ضبط‌شده توسط والد",
+            audio: audioBlob,
+          });
+
+          setRecordings((current) => [result, ...current]);
+          setMessage("صدای شما با موفقیت ذخیره شد.");
+          setRecordingLullabyId(null);
+          setRecordingTitle("");
+        } catch (error) {
+          setMessage(
+            error instanceof Error
+              ? error.message
+              : "ذخیره صدای ضبط‌شده انجام نشد."
+          );
+        } finally {
+          setSaving(false);
+        }
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setRecordingLullabyId(lullabyId);
+      setIsRecording(true);
+    } catch {
+      setMessage(
+        "دسترسی به میکروفون ممکن نشد. لطفاً اجازه استفاده از میکروفون را فعال کنید."
+      );
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current = null;
+    }
+
+    setIsRecording(false);
+  };
+
+  return (
+    <main className="mx-auto max-w-6xl px-6 py-10">
+      <section className="mb-10">
+        <h1 className="mb-3 text-3xl font-bold">لالایی‌ها</h1>
+
+        <p className="text-gray-600">
+          مجموعه‌ای آرام برای زمان خواب و استراحت کودک؛
+          والدین می‌توانند صدای خودشان را نیز برای کودک ضبط کنند.
+        </p>
+      </section>
+
+      {message && (
+        <div className="mb-6 rounded-xl border bg-gray-50 p-4 text-sm">
+          {message}
+        </div>
+      )}
+
+      {loading ? (
+        <p>در حال بارگذاری...</p>
+      ) : lullabies.length === 0 ? (
+        <p>هنوز لالایی‌ای ثبت نشده است.</p>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {lullabies.map((lullaby) => {
+            const isCurrentRecording =
+              recordingLullabyId === lullaby.id && isRecording;
+
+            return (
+              <article
+                key={lullaby.id}
+                className="rounded-2xl border bg-white p-5 shadow-sm"
+              >
+                <h2 className="mb-2 text-xl font-semibold">
+                  {lullaby.title}
+                </h2>
+
+                <p className="mb-4 text-gray-600">
+                  {lullaby.description}
+                </p>
+
+                {lullaby.lyrics && (
+                  <div className="mb-4 rounded-xl bg-pink-50 p-4">
+                    <h3 className="mb-2 font-semibold">متن لالایی</h3>
+                    <p className="whitespace-pre-line leading-8 text-gray-700">
+                      {lullaby.lyrics}
+                    </p>
+                  </div>
+                )}
+
+                {lullaby.audio_file && (
+                  <audio
+                    controls
+                    className="mb-4 w-full"
+                    src={getMediaUrl(lullaby.audio_file) || undefined}
+                  />
+                )}
+
+                <div className="mb-4 rounded-xl bg-gray-50 p-4">
+                  <h3 className="mb-3 font-semibold">
+                    🎙️ صدای خودم را ضبط کنم
+                  </h3>
+
+                  {children.length > 0 && (
+                    <select
+                      value={selectedChild}
+                      onChange={(event) =>
+                        setSelectedChild(
+                          event.target.value === ""
+                            ? ""
+                            : Number(event.target.value)
+                        )
+                      }
+                      disabled={isRecording || saving}
+                      className="mb-3 w-full rounded-lg border px-3 py-2"
+                    >
+                      <option value="">برای کدام کودک؟</option>
+
+                      {children.map((child) => (
+                        <option key={child.id} value={child.id}>
+                          {child.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  <input
+                    type="text"
+                    value={recordingTitle}
+                    onChange={(event) =>
+                      setRecordingTitle(event.target.value)
+                    }
+                    disabled={isRecording || saving}
+                    placeholder="عنوان ضبط، مثلاً لالایی مامان"
+                    className="mb-3 w-full rounded-lg border px-3 py-2"
+                  />
+
+                  {isCurrentRecording ? (
+                    <button
+                      type="button"
+                      onClick={stopRecording}
+                      className="w-full rounded-lg bg-red-600 px-4 py-2 font-semibold text-white"
+                    >
+                      ⏹ توقف و ذخیره
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => startRecording(lullaby.id)}
+                      disabled={saving || isRecording}
+                      className="w-full rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white disabled:opacity-50"
+                    >
+                      {saving
+                        ? "در حال ذخیره..."
+                        : "🎙️ شروع ضبط صدا"}
+                    </button>
+                  )}
+                </div>
+
+                {lullaby.source_name && (
+                  <p className="text-sm text-gray-500">
+                    منبع: {lullaby.source_name}
+                  </p>
+                )}
+
+                {lullaby.source_url && (
+                  <a
+                    href={lullaby.source_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-block text-sm text-blue-600 hover:underline"
+                  >
+                    مشاهده منبع
+                  </a>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      {recordings.length > 0 && (
+        <section className="mt-12">
+          <h2 className="mb-5 text-2xl font-bold">
+            🎧 صداهای ضبط‌شده من
+          </h2>
+
+          <div className="space-y-4">
+            {recordings.map((recording) => (
+              <div
+                key={recording.id}
+                className="rounded-xl border bg-white p-4 shadow-sm"
+              >
+                <h3 className="mb-2 font-semibold">
+                  {recording.title || "لالایی ضبط‌شده"}
+                </h3>
+
+                <audio
+                  controls
+                  className="w-full"
+                  src={getMediaUrl(recording.audio_file) || undefined}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
+
+
+
+
+
+
+
+

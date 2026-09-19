@@ -1,0 +1,140 @@
+﻿type AgeGroup = { id: number; title: string };
+
+type Article = {
+  id: number;
+  title: string;
+  slug: string;
+  age_groups: AgeGroup[];
+  summary: string;
+  body: string;
+  source_name: string;
+  source_url: string;
+  published_at: string;
+};
+
+async function getArticle(slug: string): Promise<Article | null> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/articles/?slug=${encodeURIComponent(slug)}`,
+    { cache: "no-store" }
+  );
+
+  if (!res.ok) return null;
+
+  const data = await res.json();
+  const list = Array.isArray(data) ? data : data.results ?? data.value ?? [];
+
+  return list?.find((a: Article) => a.slug === slug) || null;
+}
+
+function formatDate(dateStr: string) {
+  if (!dateStr) return "";
+
+  try {
+    return new Date(dateStr).toLocaleDateString("fa-IR");
+  } catch {
+    return dateStr;
+  }
+}
+
+function renderBody(body: string) {
+  return body.split("\n").map((line, index) => {
+    const key = `${index}-${line}`;
+
+    if (line.startsWith("### ")) {
+      return (
+        <h3 key={key} className="text-lg font-bold mt-7 mb-3">
+          {line.replace(/^### /, "")}
+        </h3>
+      );
+    }
+
+    if (line.startsWith("## ")) {
+      return (
+        <h2 key={key} className="text-xl font-bold mt-8 mb-4">
+          {line.replace(/^## /, "")}
+        </h2>
+      );
+    }
+
+    if (line.trim() === "") {
+      return <div key={key} className="h-3" />;
+    }
+
+    const parts = line.split(/(\*\*.*?\*\*)/g);
+
+    return (
+      <p key={key} className="leading-8 mb-3">
+        {parts.map((part, i) =>
+          part.startsWith("**") && part.endsWith("**") ? (
+            <strong key={i}>{part.slice(2, -2)}</strong>
+          ) : (
+            part
+          )
+        )}
+      </p>
+    );
+  });
+}
+
+export default async function ArticleDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const article = await getArticle(slug);
+
+  if (!article) {
+    return (
+      <main className="p-6" dir="rtl">
+        <p className="text-gray-500">این مقاله پیدا نشد.</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="p-6 max-w-3xl mx-auto" dir="rtl">
+      <h1 className="text-2xl font-bold mb-2">{article.title}</h1>
+
+      {article.published_at && (
+        <p className="text-sm text-gray-400 mb-4">
+          {formatDate(article.published_at)}
+        </p>
+      )}
+
+      {article.summary && (
+        <p className="text-gray-700 font-medium mb-6 leading-8">
+          {article.summary}
+        </p>
+      )}
+
+      <article
+        className="max-w-none leading-8"
+        style={{ color: "var(--color-text)" }}
+      >
+        {renderBody(article.body)}
+      </article>
+
+      {article.source_url && (
+        <section className="mt-10 p-5 rounded-2xl border bg-gray-50">
+          <h2 className="text-lg font-bold mb-2">منبع اصلی مقاله</h2>
+
+          {article.source_name && (
+            <p className="text-sm text-gray-600 mb-3">
+              {article.source_name}
+            </p>
+          )}
+
+          <a
+            href={article.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 font-semibold underline"
+          >
+            مشاهده مقاله اصلی در سایت رسمی ↗
+          </a>
+        </section>
+      )}
+    </main>
+  );
+}
