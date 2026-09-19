@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -232,11 +232,11 @@ export default function ChildDetailPage() {
         name: editForm.name.trim(),
         birth_date: editForm.birth_date,
         interests: editForm.interests
-          .split(",")
+          .split(/[,،]/)
           .map((item) => item.trim())
           .filter(Boolean),
         goals: editForm.goals
-          .split(",")
+          .split(/[,،]/)
           .map((item) => item.trim())
           .filter(Boolean),
       });
@@ -598,7 +598,7 @@ export default function ChildDetailPage() {
                 child.interests.map((interest, index) => (
                   <span
                     key={`${interest}-${index}`}
-                    className="rounded-full bg-orange-50 px-4 py-2 text-xs font-black text-[var(--color-primary)]"
+                    className="inline-flex whitespace-nowrap rounded-full bg-orange-50 px-4 py-2 text-xs font-black text-[var(--color-primary)]"
                   >
                     {interest}
                   </span>
@@ -629,7 +629,7 @@ export default function ChildDetailPage() {
                 child.goals.map((goal, index) => (
                   <span
                     key={`${goal}-${index}`}
-                    className="rounded-full bg-teal-50 px-4 py-2 text-xs font-black text-[var(--color-secondary)]"
+                    className="inline-flex whitespace-nowrap rounded-full bg-teal-50 px-4 py-2 text-xs font-black text-[var(--color-secondary)]"
                   >
                     {goal}
                   </span>
