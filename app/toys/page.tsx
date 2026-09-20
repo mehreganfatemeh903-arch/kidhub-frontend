@@ -1,4 +1,4 @@
-import { getMediaUrl } from "../../lib/api";
+๏ปฟimport { getMediaUrl } from "../../lib/api";
 
 type AgeGroup = {
   id: number;
@@ -40,7 +40,7 @@ async function getToys(ageGroupId?: string) {
 
   const res = await fetch(url, { cache: "no-store" });
 
-  if (!res.ok) throw new Error(`Toys API failed: ${res.status}`);
+  if (!res.ok) return [];
 
   const data = await res.json();
   return Array.isArray(data) ? data : data.results ?? data.value ?? [];
@@ -72,7 +72,7 @@ export default async function ToysPage({
                   color: "var(--color-primary)",
                 }}
               >
-                ?? วไสฮวศ ๅๆิใไฯวไๅ ศัวํ ๆฯ
+                ๐งธ ุงูุชุฎุงุจ ููุดู…ูุฏุงูู ุจุฑุงÛ ฺฉูุฏฺฉ
               </span>
 
               <h1
@@ -80,13 +80,13 @@ export default async function ToysPage({
                 style={{ color: "var(--color-primary)" }}
               >
                 {age
-                  ? "วำศวศศวาํๅวํ ใไวำศ วํไ ำไ"
-                  : "ๅใๅํ วำศวศศวาํๅว"}
+                  ? "ุงุณุจุงุจโ€ุจุงุฒÛโ€ูุงÛ ู…ูุงุณุจ ุงÛู ุณู"
+                  : "ูู…ูโ€Û ุงุณุจุงุจโ€ุจุงุฒÛโ€ูุง"}
               </h1>
 
               <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-600 sm:text-base">
-                ใฬใๆฺๅวํ วา วำศวศศวาํๅวํ ใไวำศ ัิฯ ๆฯก ศว สๆฬๅ ศๅ ำไก
-                ใๅวัสๅวํ ัิฯํ ๆ ไํวาๅวํ ํวฯํัํ.
+                ู…ุฌู…ูุนูโ€ุงÛ ุงุฒ ุงุณุจุงุจโ€ุจุงุฒÛโ€ูุงÛ ู…ูุงุณุจ ุฑุดุฏ ฺฉูุฏฺฉุ ุจุง ุชูุฌู ุจู ุณูุ
+                ู…ูุงุฑุชโ€ูุงÛ ุฑุดุฏÛ ู ูÛุงุฒูุงÛ ÛุงุฏฺฏÛุฑÛ.
               </p>
             </div>
 
@@ -97,19 +97,19 @@ export default async function ToysPage({
                 color: "var(--color-primary)",
               }}
             >
-              {toys.length} ใๆัฯ
+              {toys.length} ู…ูุฑุฏ
             </div>
           </div>
         </section>
 
         {toys.length === 0 && (
           <section className="rounded-3xl border bg-white p-10 text-center shadow-sm">
-            <div className="mb-3 text-4xl">??</div>
+            <div className="mb-3 text-4xl">๐งธ</div>
             <h2 className="text-lg font-bold text-gray-800">
-              ใๆัฯํ ศัวํ วํไ ศวาๅํ ำไํ ํฯว ไิฯ
+              ู…ูุฑุฏÛ ุจุฑุงÛ ุงÛู ุจุงุฒูโ€Û ุณูÛ ูพÛุฏุง ูุดุฏ
             </h2>
             <p className="mt-2 text-sm text-gray-500">
-              ใํสๆวไํฯ ศวาๅํ ำไํ ฯํัํ ัว วใสอวไ ไํฯ.
+              ู…Ûโ€ุชูุงูÛุฏ ุจุงุฒูโ€Û ุณูÛ ุฏÛฺฏุฑÛ ุฑุง ุงู…ุชุญุงู ฺฉูÛุฏ.
             </p>
           </section>
         )}
@@ -134,7 +134,7 @@ export default async function ToysPage({
                   />
                 ) : (
                   <div className="flex h-56 items-center justify-center text-5xl">
-                    ??
+                    ๐งธ
                   </div>
                 )}
               </a>
@@ -186,7 +186,7 @@ export default async function ToysPage({
                       className="flex-1 rounded-xl border py-2.5 text-center text-sm font-medium transition hover:bg-gray-50"
                       style={{ borderColor: "var(--color-card-border)" }}
                     >
-                      ใิวๅฯๅ ฬาฦํวส
+                      ู…ุดุงูุฏู ุฌุฒุฆÛุงุช
                     </a>
 
                     {toy.affiliate_url && (
@@ -199,14 +199,14 @@ export default async function ToysPage({
                           backgroundColor: "var(--color-secondary)",
                         }}
                       >
-                        ฮัํฯ
+                        ุฎุฑÛุฏ
                       </a>
                     )}
                   </div>
 
                   {toy.affiliate_url && (
                     <p className="mt-2 text-center text-xs text-gray-400">
-                      วา {toy.affiliate_source?.name || "Ýัๆิวๅ"}
+                      ุงุฒ {toy.affiliate_source?.name || "ูุฑูุดฺฏุงู"}
                     </p>
                   )}
                 </div>
