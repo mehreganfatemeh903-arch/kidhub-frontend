@@ -41,7 +41,7 @@ function formatPrice(price: number | null) {
 
 async function getBook(slug: string): Promise<Book | null> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/books/?slug=${encodeURIComponent(slug)}`,
+    `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/books/?slug=${encodeURIComponent(slug)}`,
     {
       cache: "no-store",
     }
@@ -236,3 +236,4 @@ export default async function BookDetailPage({
     </main>
   );
 }
+

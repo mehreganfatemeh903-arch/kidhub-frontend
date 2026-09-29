@@ -1,4 +1,4 @@
-type AgeGroup = {
+﻿type AgeGroup = {
   id: number;
   title: string;
 };
@@ -28,7 +28,7 @@ type Toy = {
 };
 
 async function getToy(slug: string): Promise<Toy | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/toys/?slug=${slug}`, {
+  const res = await fetch(`${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/toys/?slug=${slug}`, {
     cache: "no-store",
   });
   if (!res.ok) return null;
@@ -115,3 +115,4 @@ export default async function ToyDetailPage({
     </main>
   );
 }
+

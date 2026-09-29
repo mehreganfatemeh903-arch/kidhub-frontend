@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kidhub-frontend",
   "main": ".open-next/worker.js",
@@ -8,5 +8,11 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
+  "services": [
+    {
+      "binding": "API_PROXY",
+      "service": "kidhub-api-proxy"
+    }
+  ],
   "observability": { "enabled": true }
 }

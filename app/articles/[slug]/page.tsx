@@ -21,7 +21,7 @@ const SITE_URL = "http://127.0.0.1:3000";
 
 async function getArticle(slug: string): Promise<Article | null> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/articles/?slug=${encodeURIComponent(slug)}`,
+    `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/articles/?slug=${encodeURIComponent(slug)}`,
     { cache: "no-store" }
   );
 
@@ -321,3 +321,4 @@ export default async function ArticleDetailPage({
     </main>
   );
 }
+
