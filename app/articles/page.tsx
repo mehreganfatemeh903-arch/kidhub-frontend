@@ -14,8 +14,8 @@ type Article = {
 
 async function getArticles(ageGroupId?: string) {
   const url = ageGroupId
-    ? `${process.env.NEXT_PUBLIC_API_URL}/articles/?age_groups=${ageGroupId}`
-    : `${process.env.NEXT_PUBLIC_API_URL}/articles/`;
+    ? `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/articles/?age_groups=${ageGroupId}`
+    : `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/articles/`;
 
   const res = await fetch(url, { cache: "no-store" });
 
@@ -200,3 +200,4 @@ export default async function ArticlesPage({
     </main>
   );
 }
+

@@ -24,8 +24,8 @@ type Book = {
 
 async function getBooks(ageGroupId?: string) {
   const url = ageGroupId
-    ? `${process.env.NEXT_PUBLIC_API_URL}/books/?age_groups=${ageGroupId}`
-    : `${process.env.NEXT_PUBLIC_API_URL}/books/`;
+    ? `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/books/?age_groups=${ageGroupId}`
+    : `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/books/`;
 
   const res = await fetch(url, { cache: "no-store" });
 
@@ -211,3 +211,4 @@ export default async function BooksPage({
     </main>
   );
 }
+
