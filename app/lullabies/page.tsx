@@ -69,7 +69,7 @@ export default function LullabiesPage() {
     const load = async () => {
       try {
         const [lullabyResponse, childData] = await Promise.all([
-          fetch(`${process.env.NEXT_PUBLIC_API_URL}/lullabies/`),
+          fetch("https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy/lullabies/"),
           getChildProfiles().catch(() => []),
         ]);
 

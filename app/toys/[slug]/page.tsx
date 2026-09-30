@@ -32,7 +32,7 @@ async function getToy(slug: string): Promise<Toy | null> {
     cache: "no-store",
   });
   if (!res.ok) return null;
-  const data = await res.json();
+  const data: any = await res.json();
   const list = Array.isArray(data) ? data : data.value;
   return list?.find((t: Toy) => t.slug === slug) || null;
 }

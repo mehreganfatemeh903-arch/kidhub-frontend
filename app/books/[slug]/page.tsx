@@ -49,7 +49,7 @@ async function getBook(slug: string): Promise<Book | null> {
 
   if (!res.ok) return null;
 
-  const data = await res.json();
+  const data: any = await res.json();
   const list = Array.isArray(data)
     ? data
     : data.results ?? data.value ?? [];
@@ -236,4 +236,5 @@ export default async function BookDetailPage({
     </main>
   );
 }
+
 

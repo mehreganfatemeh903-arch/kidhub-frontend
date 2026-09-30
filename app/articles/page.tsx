@@ -21,7 +21,7 @@ async function getArticles(ageGroupId?: string) {
 
   if (!res.ok) return [];
 
-  const data = await res.json();
+  const data: any = await res.json();
   return Array.isArray(data) ? data : data.results ?? data.value ?? [];
 }
 
@@ -200,4 +200,5 @@ export default async function ArticlesPage({
     </main>
   );
 }
+
 

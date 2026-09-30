@@ -58,7 +58,7 @@ export async function createChildProfile(data: {
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
+    const errorData: any = await res.json().catch(() => ({}));
     const message =
       errorData.detail || "خطا در ایجاد پروفایل کودک";
 
@@ -77,11 +77,11 @@ export async function deleteChildProfile(childId: number): Promise<void> {
     },
   });
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
+    const errorData: any = await res.json().catch(() => ({}));
     throw new Error(errorData.detail || "خطا در حذف پروفایل کودک");
   }
 }
-export async function updateChildProfile(childId: number, data: { name: string; birth_date: string; interests: string[]; goals: string[]; }): Promise<ChildProfile> { const token = localStorage.getItem("kidhub_access"); const res = await fetch(`${API_URL}/child-profiles/${childId}/`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(data), }); if (!res.ok) { const errorData = await res.json().catch(() => ({})); throw new Error(errorData.detail || "خطا در ویرایش پروفایل کودک"); } return res.json(); }
+export async function updateChildProfile(childId: number, data: { name: string; birth_date: string; interests: string[]; goals: string[]; }): Promise<ChildProfile> { const token = localStorage.getItem("kidhub_access"); const res = await fetch(`${API_URL}/child-profiles/${childId}/`, { method: "PATCH", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(data), }); if (!res.ok) { const errorData: any = await res.json().catch(() => ({})); throw new Error(errorData.detail || "خطا در ویرایش پروفایل کودک"); } return res.json(); }
 
 export type Recommendation = {
   type: "toy" | "book";
@@ -137,7 +137,7 @@ export async function uploadLullabyRecording(data: {
   child?: number | null;
   title?: string;
   audio: Blob;
-}) {
+}): Promise<{ id: number; child: number | null; lullaby: number; audio_file: string; title: string; created_at: string }> {
   const token = localStorage.getItem("kidhub_access");
 
   const formData = new FormData();
@@ -162,7 +162,7 @@ export async function uploadLullabyRecording(data: {
   });
 
   if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
+    const errorData: any = await res.json().catch(() => ({}));
     throw new Error(
       errorData.detail || "خطا در ذخیره صدای ضبط‌شده"
     );
@@ -186,5 +186,6 @@ export async function getLullabyRecordings() {
 
   return res.json();
 }
+
 
 

@@ -59,7 +59,7 @@ export async function register(
   });
 
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
+    const errData: any = await res.json().catch(() => ({}));
 
     let msg = "ثبت‌نام انجام نشد. لطفاً دوباره تلاش کنید.";
 

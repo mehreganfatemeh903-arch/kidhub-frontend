@@ -18,7 +18,7 @@ async function getAgeGroups(): Promise<AgeGroup[]> {
 
     if (!res.ok) return [];
 
-    const data = await res.json();
+    const data: any = await res.json();
     return Array.isArray(data) ? data : data.value ?? [];
   } catch {
     return [];

@@ -27,11 +27,11 @@ async function getBooks(ageGroupId?: string) {
     ? `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/books/?age_groups=${ageGroupId}`
     : `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/books/`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(url);
 
-  if (!res.ok) return [];
+  if (!res.ok) throw new Error(`Books API failed: ${res.status}`);
 
-  const data = await res.json();
+  const data: any = await res.json();
   return Array.isArray(data) ? data : data.results ?? data.value ?? [];
 }
 
@@ -46,7 +46,7 @@ export default async function BooksPage({
   searchParams: Promise<{ age?: string }>;
 }) {
   const { age } = await searchParams;
-  const books: Book[] = await getBooks(age);
+  let books: Book[] = []; try { books = await getBooks(age); } catch (error) { console.error("BOOKS_DEBUG", error); }
 
   return (
     <main
@@ -211,4 +211,11 @@ export default async function BooksPage({
     </main>
   );
 }
+
+
+
+
+
+
+
 

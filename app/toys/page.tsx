@@ -35,14 +35,14 @@ type Toy = {
 
 async function getToys(ageGroupId?: string) {
   const url = ageGroupId
-    ? `${"https://kidhubapi-v161cpyq.b4a.run/api"}/toys/?age_groups=${ageGroupId}`
-    : `${"https://kidhubapi-v161cpyq.b4a.run/api"}/toys/`;
+    ? `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/toys/?age_groups=${ageGroupId}`
+    : `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/toys/`;
 
   const res = await fetch(url, { cache: "no-store", headers: { "User-Agent": "KidHub-Cloudflare" } });
 
   if (!res.ok) { throw new Error(`Toy API failed: ${res.status} ${res.statusText}`); }
 
-  const data = await res.json();
+  const data: any = await res.json();
   return Array.isArray(data) ? data : data.results ?? data.value ?? [];
 }
 
@@ -218,4 +218,5 @@ export default async function ToysPage({
     </main>
   );
 }
+
 
