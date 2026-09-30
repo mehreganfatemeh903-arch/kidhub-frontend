@@ -1,4 +1,6 @@
-﻿type AgeGroup = { id: number; title: string };
+﻿import { getCloudflareContext } from "@opennextjs/cloudflare";
+
+type AgeGroup = { id: number; title: string };
 
 type Article = {
   id: number;
@@ -12,17 +14,20 @@ type Article = {
   published_at: string;
 };
 
-async function getArticles(ageGroupId?: string) {
-  const url = ageGroupId
-    ? `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/articles/?age_groups=${ageGroupId}`
-    : `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/articles/`;
+async function getArticles(ageGroupId?: string): Promise<Article[]> {
+  const path = ageGroupId
+    ? `/api-proxy/articles/?age_groups=${ageGroupId}`
+    : "/api-proxy/articles/";
 
-  const res = await fetch(url, { cache: "no-store" });
+  const { env } = await getCloudflareContext({ async: true });
+  const res = await env.API_PROXY.fetch(
+    new Request(`https://kidhub-api-proxy${path}`)
+  );
 
-  if (!res.ok) return [];
+  if (!res.ok) throw new Error(`Articles API failed: ${res.status}`);
 
   const data: any = await res.json();
-  return Array.isArray(data) ? data : data.results ?? data.value ?? [];
+  return (Array.isArray(data) ? data : data.results ?? data.value ?? []) as Article[];
 }
 
 function formatDate(dateStr: string) {

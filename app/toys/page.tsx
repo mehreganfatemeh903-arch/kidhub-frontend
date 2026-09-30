@@ -1,4 +1,5 @@
 ﻿import { getMediaUrl } from "../../lib/api";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 type AgeGroup = {
   id: number;
@@ -34,13 +35,16 @@ type Toy = {
 };
 
 async function getToys(ageGroupId?: string) {
-  const url = ageGroupId
-    ? `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/toys/?age_groups=${ageGroupId}`
-    : `${"https://kidhub-api-proxy.mehreganfatemeh903.workers.dev/api-proxy"}/toys/`;
+  const path = ageGroupId
+    ? `/api-proxy/toys/?age_groups=${ageGroupId}`
+    : "/api-proxy/toys/";
 
-  const res = await fetch(url, { cache: "no-store", headers: { "User-Agent": "KidHub-Cloudflare" } });
+  const { env } = await getCloudflareContext({ async: true });
+  const res = await env.API_PROXY.fetch(
+    new Request(`https://kidhub-api-proxy${path}`)
+  );
 
-  if (!res.ok) { throw new Error(`Toy API failed: ${res.status} ${res.statusText}`); }
+  if (!res.ok) throw new Error(`Toy API failed: ${res.status}`);
 
   const data: any = await res.json();
   return Array.isArray(data) ? data : data.results ?? data.value ?? [];
@@ -218,5 +222,4 @@ export default async function ToysPage({
     </main>
   );
 }
-
 
