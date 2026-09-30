@@ -210,6 +210,73 @@ Potential future extensions include:
 * Analytics and personalization
 * Multilingual support
 
+## 💼 Product Available for Purchase
+
+**KidHub is available as a complete, production-ready web product.**
+
+### Live Demo
+
+**Website:**
+https://kidhub-frontend.mehreganfatemeh903.workers.dev
+
+### What You Get
+
+* Complete Next.js frontend source code
+* Production Cloudflare deployment configuration
+* Responsive web interface
+* User registration and authentication
+* Child profile management
+* Age-based content filtering
+* Books section
+* Educational toys section
+* Parenting and educational articles
+* Product images and information
+* Affiliate-ready product links
+* API integration architecture
+* GitHub repository
+* Technical documentation and handover
+
+### Technology
+
+**Next.js · React · TypeScript · Cloudflare Workers · OpenNext · Server-Side Rendering**
+
+### Production Verification
+
+The current production version has been tested successfully:
+
+| Section               | Status        |
+| --------------------- | ------------- |
+| Books                 | ✅ Operational |
+| Toys                  | ✅ Operational |
+| Articles              | ✅ Operational |
+| Authentication        | ✅ Operational |
+| Persian Content       | ✅ Verified    |
+| Production Deployment | ✅ Live        |
+
+### Asking Price
+
+# **$12,500 USD**
+
+The price is negotiable depending on the final transfer scope and support requirements.
+
+Additional development and customization can be provided separately.
+
+### Business Potential
+
+KidHub can be further developed into:
+
+* Parenting SaaS
+* Children's educational platform
+* Affiliate marketplace
+* Personalized recommendation platform
+* Educational content subscription service
+* B2B platform for children's products and services
+
+**Interested in acquiring KidHub or discussing customization?**
+
+Please contact the owner through GitHub.
+
+
 ## License
 
 This project is proprietary software unless otherwise specified by the project owner.
